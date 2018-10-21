@@ -1,8 +1,15 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
+def a():
+    if request.method == 'POST':
+        name = request.form['app_name']
+        print(name)
+    return render_template("a.html")
+
+@app.route('/wca')
 def hello():
     return render_template("test.html")
 
