@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+
+# 菅原のＰＣにLocal-Brokerを作成した．
+# このためredisを'local-host'にインストールした．その時のport numberは6379だった
+# def connect 関数は　'local-host'に接続し、port=6379
+# EdgeBaseAgentのインスタンスのcoterie nameはedge_setting.iniのファイルに記述している
+# Coterieのすべてのエージェントプログラムを立ち上げるのは、そのフォルダでstart.cmdを実行
+
 from agent.agent_message import AgentMessage
 
 import paho.mqtt.client as mqtt
@@ -20,23 +27,13 @@ class EdgeBaseAgent:
         config.read('edge_settings.ini')
 
         self.coterie = config['SETTINGS']['CoterieName']
+        self.host = config['SETTINGS']['BrokerIP']
         self.topic = 'coterie-' + self.coterie
 
         print("[LOG]", "Load Settings : Coterie - ", self.coterie)
 
     def connect(self):
-        # Publisherと同様に v3.1.1を利用
-        # self.client = client = mqtt.Client(protocol=mqtt.MQTTv311)
-        # client.on_connect = self.on_connect
-        # client.on_message = self.on_message
-
-        # エージェント空間への接続
-        # MQTTの設定
-        if self.local:
-            self.host = 'localhost'
-        else:
-            self.host = '192.168.10.13'
-        self.port = 6379
+        self.port = 6379    #Redisのインストール時にポート番号が指定される
 
         # client.tls_set("agent_space.ca", cert_reqs=ssl.CERT_NONE, tls_version=ssl.PROTOCOL_TLSv1_2)
         # client.tls_insecure_set(True)
@@ -85,6 +82,13 @@ class EdgeBaseAgent:
         msg.To = "ALL"
         msg.Action = "HELLO"
         msg.Args = ""
+        #ここから追加
+        # msg.TaskName = ""
+        # msg.WCAs = ""
+        # msg.StartDate = ""
+        # msg.StartTime = ""
+        # msg.EndDate = ""
+        # msg.EndTime = ""
         self.send_message(msg)
 
     def on_message(self, msg):
@@ -131,5 +135,3 @@ class EdgeBaseAgent:
     @name.setter
     def name(self, name):
         self.__name = name
-
-

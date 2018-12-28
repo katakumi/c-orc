@@ -82,6 +82,13 @@ class BaseAgent:
         msg.To = "ALL"
         msg.Action = "HELLO"
         msg.Args = ""
+        #ここから使い
+        msg.TaskName = ""
+        msg.WCAs = ""
+        msg.StartDate = ""
+        msg.StartTime = ""
+        msg.EndDate = ""
+        msg.EndTime = ""
         client.publish(self.topic, msg.to_json(), 2)
         
     

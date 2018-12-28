@@ -33,6 +33,13 @@ class AgentMessage:
         self.SenderIP = ""
         self.SenderSite = ""
         self.Thru = ""
+        #ここから追加
+        # self.TaskName = ""
+        # self.WCAs = ""
+        # self.StartDate = ""
+        # self.StartTime = ""
+        # self.EndDate = ""
+        # self.EndTime = ""
 
         if json_text is not None:
             self.parse(json_text)
@@ -44,6 +51,7 @@ class AgentMessage:
         
         # Output Filter
         f = ['Type', 'Date', 'From', 'To', 'Action', 'Args', 'Contents']
+        #f = ['Type', 'Date', 'From', 'To', 'Action', 'Args', 'Contents','TaskName','WCAs','StartDate','StartTime','EndDate','EndTime']
         d = {k : v for k, v in filter(lambda t: t[0] in f, self.__dict__.items())} # [TODO]
         return json.dumps(d)
     
