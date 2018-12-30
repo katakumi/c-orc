@@ -21,6 +21,28 @@ cursor = conn.cursor()
 cursor.execute("USE test")
 conn.commit()
 
+class RouteControl(KnowledgeEngine):
+    # @Rule(Fact(rote="gw1-wap1"),(Fact(situation="ap1")))
+    # def pattern1(self):
+    #     print("aaa")
+    #
+    # @Rule(Fact(rote="gw2-wap2"),(Fact(situation="ap2")))
+    # def pattern2(self):
+    #     print("bbb")
+    # @Rule(Fact(Start_unix=,WAP,Priority,Type)
+    # def pattern1(self):
+    #     print("aaa")
+    #
+    # @Rule(Fact(rote="gw2-wap2"),(Fact(situation="ap2")))
+    # def pattern2(self):
+    #     print("bbb")
+    @Rule(Fact(WAP1=EQ(WAP2)), (Fact(situation="ap2")))
+    def pattern2(self):
+        print("bbb")
+
+    # WAP Priority TYpe
+
+
 class ResourceConnectorAgent(EdgeBaseAgent):
     #
     ACTIONS = {
@@ -38,8 +60,6 @@ class ResourceConnectorAgent(EdgeBaseAgent):
 
 
     def act_output(self, msg: AgentMessage):
-
-
         # メッセージ関連
         # --------------------------------
         print(">>>", msg.Args)
@@ -48,6 +68,7 @@ class ResourceConnectorAgent(EdgeBaseAgent):
         # msg.From = "Decison"
         agt.send_message(msg, qos=0)  # メッセージ送信
         # --------------------------------
+
 
 
         # mysql関連
@@ -70,7 +91,10 @@ class ResourceConnectorAgent(EdgeBaseAgent):
 
 
 
-        # 5分毎の処理
+
+
+
+        # HIから入力された情報の処理
         sql = "SELECT * FROM iot_table WHERE Start_unix > '%s' AND Start_unix < '%s';"
         cursor.execute(sql, (now_unix, after_unix))
         result = cursor.fetchall()
@@ -84,6 +108,45 @@ class ResourceConnectorAgent(EdgeBaseAgent):
             print(r)
             n += 1
         # conn.close()
+
+        print(data[0][2])
+        print(data[1][2])
+        if (data[0][2] < data[1][2] and data[0][3] > data[1][2]) or \
+            (data[0][2] > data[1][2] and data[0][2] < data[1][3]) or \
+            (data[0][2] > data[1][2] and data[0][3] < data[1][3]) or \
+            (data[0][2] < data[1][2] and data[0][3] > data[1][3]):
+                print("bbbbb")
+                engine = RouteControl()
+                engine.reset()
+                engine.declare(
+                    Fact(WAP1=data[0][4]),
+                    Fact(Priority1=[0][5]),
+                    Fact(Type1=[0][6]),
+                    Fact(WAP2=data[1][4]),
+                    Fact(Priority2=[1][5]),
+                    Fact(Type2=[1][6])
+                )
+                engine.run()
+
+
+        # engine = RouteControl()
+        # engine.reset()
+        # # engine.declare(Fact(Light(data=str(input()))))
+        # engine.declare(
+        #     # Fact(rote=str(input("rote>>>"))),
+        #     # Fact(situation=str(input("situation>>>"))),
+        #     # Fact(AppPriority=int(input("AppPriority>>>")))
+        #
+        #     # Fact(Start_unix1=data[0][2]),
+        #     Fact(WAP1=data[0][4]),
+        #     Fact(Priority1=[0][5]),
+        #     Fact(Type1=[0][6]),
+        #     # Fact(Start_unix2=data[1][2]),
+        #     Fact(WAP2=data[1][4]),
+        #     Fact(Priority2=[1][5]),
+        #     Fact(Type2=[1][6])
+        # )
+        # engine.run()
 
 
 
@@ -164,7 +227,6 @@ if __name__ == "__main__":
                     End_unix INT,
                     WAP INT,
                     Priority INT,
-                    WCA INT,
                     Type INT,
                     Practically INT);""")
     conn.commit()
