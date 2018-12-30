@@ -21,7 +21,8 @@ cursor = conn.cursor()
 cursor.execute("USE test")
 conn.commit()
 
-class RouteControl(KnowledgeEngine):
+# pyknow
+# class RouteControl(KnowledgeEngine):
     # @Rule(Fact(rote="gw1-wap1"),(Fact(situation="ap1")))
     # def pattern1(self):
     #     print("aaa")
@@ -36,11 +37,7 @@ class RouteControl(KnowledgeEngine):
     # @Rule(Fact(rote="gw2-wap2"),(Fact(situation="ap2")))
     # def pattern2(self):
     #     print("bbb")
-    @Rule(Fact(WAP1=EQ(WAP2)), (Fact(situation="ap2")))
-    def pattern2(self):
-        print("bbb")
 
-    # WAP Priority TYpe
 
 
 class ResourceConnectorAgent(EdgeBaseAgent):
@@ -111,22 +108,27 @@ class ResourceConnectorAgent(EdgeBaseAgent):
 
         print(data[0][2])
         print(data[1][2])
-        if (data[0][2] < data[1][2] and data[0][3] > data[1][2]) or \
+        print("-------------")
+        # 使用する時間とWAPが被っていたら
+        if ((data[0][2] < data[1][2] and data[0][3] > data[1][2]) or \
             (data[0][2] > data[1][2] and data[0][2] < data[1][3]) or \
             (data[0][2] > data[1][2] and data[0][3] < data[1][3]) or \
-            (data[0][2] < data[1][2] and data[0][3] > data[1][3]):
+            (data[0][2] < data[1][2] and data[0][3] > data[1][3])) and \
+            (data[0][4] == data[1][4]):
                 print("bbbbb")
-                engine = RouteControl()
-                engine.reset()
-                engine.declare(
-                    Fact(WAP1=data[0][4]),
-                    Fact(Priority1=[0][5]),
-                    Fact(Type1=[0][6]),
-                    Fact(WAP2=data[1][4]),
-                    Fact(Priority2=[1][5]),
-                    Fact(Type2=[1][6])
-                )
-                engine.run()
+
+                # pyknow
+                # engine = RouteControl()
+                # engine.reset()
+                # engine.declare(
+                #     Fact(WAP1=data[0][4]),
+                #     Fact(Priority1=[0][5]),
+                #     Fact(Type1=[0][6]),
+                #     Fact(WAP2=data[1][4]),
+                #     Fact(Priority2=[1][5]),
+                #     Fact(Type2=[1][6])
+                # )
+                # engine.run()
 
 
         # engine = RouteControl()
