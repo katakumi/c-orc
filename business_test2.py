@@ -7,6 +7,8 @@ from business_rules.variables import BaseVariables, numeric_rule_variable, strin
 class WCA():
     def __init__(self, name, **kwargs):
         self.name = name
+        self.name1 = kwargs.get("name1", 0)
+        self.name2 = kwargs.get("name2", 0)
         self.prirority1 = kwargs.get("prirority1", 0)
         self.type1 = kwargs.get("type1", 0)
         self.prirority2 = kwargs.get("prirority2", 0)
@@ -23,8 +25,12 @@ class AdVariables(BaseVariables):
         self.wca = wca
 
     @string_rule_variable
-    def name(self):
-        return self.wca.name
+    def name1(self):
+        return self.wca.name1
+
+    @string_rule_variable
+    def name2(self):
+        return self.wca.name2
 
     @string_rule_variable
     def prirority1(self):
@@ -57,15 +63,15 @@ def main():
     rules = [{
         'conditions': {
             'all': [
-                {'name': 'prirority1', 'operator': 'equal_to', 'value': 'a'},
-                {'name': 'type1', 'operator': 'equal_to', 'value': 'a'},
-                {'name': 'prirority2', 'operator': 'equal_to', 'value': 'a'},
-                {'name': 'type2', 'operator': 'equal_to', 'value': 'a'},
+                {'name1': 'prirority1', 'operator': 'equal_to', 'value': 'a'},
+                {'name1': 'type1', 'operator': 'equal_to', 'value': 'a'},
+                {'name1': 'prirority2', 'operator': 'equal_to', 'value': 'a'},
+                {'name1': 'type2', 'operator': 'equal_to', 'value': 'a'},
 
             ]
         },
         'actions': [
-            {'name': 'add_situation', 'params': {'situation': 'situation_a'}},
+            {'name1': 'add_situation', 'params': {'situation': 'situation_a'}},
         ],
     },
     # {
@@ -84,13 +90,13 @@ def main():
     # wcas = [
     #     WCA(name='WCA1', prirority1='gw2_a', prirority2='gw2_b', route=['wap1-wap2-gw1', 'wap3-gw2'])
     # ]
-    appname = input("app1 name >>>")
+    appname1 = input("app1 name >>>")
     pri1 = input("prirority1 >>>")
     ty1 = input("type1 >>>")
     pri2 = input("prirority2 >>>")
     ty2 = input("type2 >>>")
     wcas = [
-        WCA(name=appname, prirority1=pri1, type1=ty1, prirority2=pri2, type2=ty2)
+        WCA(name=appname1, name1=appname1, prirority1=pri1, type1=ty1, prirority2=pri2, type2=ty2)
     ]
 
     for wca in wcas:
