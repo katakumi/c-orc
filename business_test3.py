@@ -98,8 +98,7 @@ class AdActions(BaseActions):
         self.app.save1()
         reslt = self.app.save1()
         print("12345",self.app.save1())
-        # return self.app.save1()
-        return reslt
+        self.state = reslt
 
     def add_situation2(self, situation):
         self.app.situation.append(situation)
@@ -266,6 +265,9 @@ def main():
                 defined_actions=AdActions(app),
                 stop_on_first_trigger=True)
     print("abc =",abc)
+
+    pri = run_all().state
+    print("pri =",pri)
 
 
 
