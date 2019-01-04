@@ -70,7 +70,7 @@ class AdVariables(BaseVariables):
 
     @string_rule_variable
     def priority1(self):
-        print("priority1")
+        # print("priority1")
         return self.app.priority1
 
     @string_rule_variable
@@ -79,7 +79,7 @@ class AdVariables(BaseVariables):
 
     @string_rule_variable
     def priority2(self):
-        print("priority2")
+        # print("priority2")
         return self.app.priority2
 
     @string_rule_variable
@@ -90,14 +90,14 @@ class AdVariables(BaseVariables):
 class AdActions(BaseActions):
     def __init__(self, app):
         self.app = app
-        print("121212")
+        # print("121212")
 
     @rule_action(params={"situation": FIELD_TEXT})
     def add_situation1(self, situation):
         self.app.situation.append(situation)
         self.app.save1()
         reslt = self.app.save1()
-        print("12345",self.app.save1())
+        # print("12345",self.app.save1())
         self.state = reslt
 
     def add_situation2(self, situation):
@@ -258,16 +258,16 @@ def main():
     iot_app = [
         APP(name=app_name1, app1=app_name1, priority1=pri1, app2=app_name2, priority2=pri2)
     ]
-    print("for")
+    # print("for")
     for app in iot_app:
-        abc = run_all(rule_list=rules,
+        run_all(rule_list=rules,
                 defined_variables=AdVariables(app),
                 defined_actions=AdActions(app),
                 stop_on_first_trigger=True)
-    print("abc =",abc)
-
-    pri = run_all().state
-    print("pri =",pri)
+    # print("abc =",abc)
+    #
+    # pri = run_all().state
+    # print("pri =",pri)
 
 
 
