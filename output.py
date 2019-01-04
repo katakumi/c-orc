@@ -10,7 +10,7 @@ class ResourceConnectorAgent(EdgeBaseAgent):
     }
 
     def act_output(self, msg:AgentMessage):
-        print(">>>", msg.Args['SENTENCE'], msg.Date)
+        print(">>>", msg.Args)
         #print(">>>", msg.TaskID['SENTENCE'], msg.Date)
 
 

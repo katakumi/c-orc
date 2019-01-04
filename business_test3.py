@@ -2,6 +2,18 @@ from business_rules import run_all
 from business_rules.actions import BaseActions, rule_action
 from business_rules.fields import FIELD_TEXT
 from business_rules.variables import BaseVariables, numeric_rule_variable, string_rule_variable
+# -*- coding: utf-8 -*-
+
+from agent.edge_agent import EdgeBaseAgent
+from agent.agent_message import AgentMessage
+import json
+
+class ResourceConnectorAgent(EdgeBaseAgent):
+    pass
+
+# if __name__ == "__main__":
+
+
 
 
 class APP():
@@ -21,7 +33,19 @@ class APP():
     def save1(self):
         print(self.app1, self.situation)
         print("111111-1")
-        return self.situation
+        # # エージェントの起動
+        agt = ResourceConnectorAgent("INPUT")
+        msg = AgentMessage()
+        msg.Type = "INFORM"
+        msg.From = agt.name
+        msg.To = "OUTPUT"
+        msg.Action = "OUTPUT"
+        # msg.Args = {self.app1}
+        msg.Args = {self.app1:self.situation
+        }
+        agt.send_message(msg, qos=0)
+        # return self.situation
+        print(type(self.situation))
 
     def save2(self):
         print(self.app2, self.situation)
@@ -34,24 +58,6 @@ class APP():
         # return "aa"
 
 
-
-    # def save4(self):
-    #     print(self.app2, self.situation)
-    #
-    # def save5(self):
-    #     print(self.app2, self.situation)
-    #
-    # def save6(self):
-    #     print(self.app2, self.situation)
-    #
-    # def save7(self):
-    #     print(self.app2, self.situation)
-    #
-    # def save8(self):
-    #     print(self.app2, self.situation)
-    #
-    # def save9(self):
-    #     print(self.app2, self.situation)
 
 
 
@@ -110,30 +116,6 @@ class AdActions(BaseActions):
         # aa = self.app.save3()
         # return aa
 
-
-    # def add_situation4(self, situation):
-    #     self.app.situation.append(situation)
-    #     self.app.save3()
-    #
-    # def add_situation5(self, situation):
-    #     self.app.situation.append(situation)
-    #     self.app.save5()
-    #
-    # def add_situation6(self, situation):
-    #     self.app.situation.append(situation)
-    #     self.app.save6()
-    #
-    # def add_situation7(self, situation):
-    #     self.app.situation.append(situation)
-    #     self.app.save7()
-    #
-    # def add_situation8(self, situation):
-    #     self.app.situation.append(situation)
-    #     self.app.save8()
-    #
-    # def add_situation9(self, situation):
-    #     self.app.situation.append(situation)
-    #     self.app.save9()
 
 # app1 > app2 →　save1
 # app1 < app2 →　save2
@@ -258,20 +240,11 @@ def main():
     iot_app = [
         APP(name=app_name1, app1=app_name1, priority1=pri1, app2=app_name2, priority2=pri2)
     ]
-    # print("for")
     for app in iot_app:
         run_all(rule_list=rules,
                 defined_variables=AdVariables(app),
                 defined_actions=AdActions(app),
                 stop_on_first_trigger=True)
-    # print("abc =",abc)
-    #
-    # pri = run_all().state
-    # print("pri =",pri)
-
-
-
-
 
 if __name__ == '__main__':
     main()
