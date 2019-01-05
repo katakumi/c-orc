@@ -87,10 +87,6 @@ class ResourceConnectorAgent(EdgeBaseAgent):
         # print(now_unix)
 
 
-
-
-
-
         # HIから入力された情報の処理
         sql = "SELECT * FROM iot_table WHERE Start_unix > '%s' AND Start_unix < '%s';"
         cursor.execute(sql, (now_unix, after_unix))
@@ -155,11 +151,6 @@ class ResourceConnectorAgent(EdgeBaseAgent):
         # デバイスが使用しているアプリ名 or IPアドレス     use-app(d1-aa,d2-aa,d3-bb)
         #
         data = {"rote":('gw1-wap1','gw2-wap2'), "unused-rote":("gw1-wap2","gw2-wap3") }
-
-
-
-
-
 
 
         # engine = RouteControl()
@@ -232,11 +223,6 @@ class ResourceConnectorAgent(EdgeBaseAgent):
         # 優先度によって経路を変更
         # DBにIoTアプリが使用するWAPの情報を優先度によって書き込む
         #
-
-
-
-
-
 
 if __name__ == "__main__":
     print("===============================================================")

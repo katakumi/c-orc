@@ -13,7 +13,8 @@ if __name__ == "__main__":
     agt = ResourceConnectorAgent("INPUT")
 
     while True:
-        WCA_name = input(" WCA_name> ")
+        send = input(">>>")
+        # WCA_name = input(" WCA_name> ")
         # INPUT = input(" INPUT > ")
         # OUTPUT = input(" OUTPUT > ")
         # state = input(" state > ")
@@ -23,28 +24,33 @@ if __name__ == "__main__":
         msg.Type = "INFORM"
         msg.From = agt.name
         # msg.To = "Cognition"  # 宛先の変更
-        msg.To = "Cognition"
+        msg.To = "ab"
         msg.Action = "OUTPUT"
-
         msg.Args = {
-            "WCA_name": WCA_name,
-            # "INPUT": INPUT,
-            # "OUTPUT": OUTPUT,
-            # "state": state,
-            # "rote1": rote1,
-            "INPUT": 10,
-            "OUTPUT": 10,
-            "state": 20,
-            "rote1": 20,
-            "rote2": 20,
-            "rote3": 30,
-            "rote4": 41,
-            "rote5": 42,
-            "rote6": 52,
-            "rote7": 53,
-            "broken1": 0,
-            "broken2": 0,
+            "rote": ("gw1-wap1-d1","gw2-wap2-d2"),
+            "unused-rote": ("gw1-wap2", "gw2-wap3")
+
         }
+
+        # msg.Args = {
+        #     "WCA_name": WCA_name,
+        #     # "INPUT": INPUT,
+        #     # "OUTPUT": OUTPUT,
+        #     # "state": state,
+        #     # "rote1": rote1,
+        #     "INPUT": 10,
+        #     "OUTPUT": 10,
+        #     "state": 20,
+        #     "rote1": 20,
+        #     "rote2": 20,
+        #     "rote3": 30,
+        #     "rote4": 41,
+        #     "rote5": 42,
+        #     "rote6": 52,
+        #     "rote7": 53,
+        #     "broken1": 0,
+        #     "broken2": 0,
+        # }
         print(">>>", msg.Args)
         agt.send_message(msg, qos=0)    #メッセージ送信
 
