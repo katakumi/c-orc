@@ -46,16 +46,12 @@ class ResourceConnectorAgent(EdgeBaseAgent):
             name2 = "wap"+ str(name1)
             # print(name2)
             sum += msg.Args["wap"][name2]
-            # print(msg.Args["wap"][name2])
             i += 1
             leng += 1
-        print("device ", sum)
-        # print("len", leng)
-        # count = len(msg.Args["wap"])
-        # len(msg.Args["wap"])
-        # print(type(count))
+        print("device total", sum)
+        # デバイス数÷WAP数
         ave = sum / leng
-        print("age", ave)
+        print("agerage", ave)
 
         # 平均と比較してWAPに接続されているデバイス数の偏りがないか
         i = 0
@@ -69,6 +65,15 @@ class ResourceConnectorAgent(EdgeBaseAgent):
                     biased = name2
                 i += 1
         print("biased", biased)
+
+        # DBにsituationを保存
+        # Decisionに送信
+        # Cognitionの処理は終わり
+        # ここからDecision
+        # DBからsituationを取り出す or Cognitionから送信してもらう
+        # 優先するアプリとそのWAPをDBから検索
+        # WAPが使われていたら経路変更
+
 
         # ave = sum / count
         # print(ave)
