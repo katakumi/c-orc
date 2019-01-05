@@ -11,10 +11,6 @@ import json
 class ResourceConnectorAgent(EdgeBaseAgent):
     pass
 
-# if __name__ == "__main__":
-
-
-
 
 class APP():
     def __init__(self, name, app1, app2, **kwargs):
@@ -56,9 +52,6 @@ class APP():
         print("Same priority")
         print("111111-3")
         # return "aa"
-
-
-
 
 
 

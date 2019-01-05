@@ -22,7 +22,8 @@ if __name__ == "__main__":
         msg = AgentMessage()
         msg.Type = "INFORM"
         msg.From = agt.name
-        msg.To = "Cognition"  # 宛先の変更
+        # msg.To = "Cognition"  # 宛先の変更
+        msg.To = "Cognition"
         msg.Action = "OUTPUT"
 
         msg.Args = {
