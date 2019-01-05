@@ -112,7 +112,7 @@ def confirm():
         msg = AgentMessage()
         msg.Type = "INFORM"
         msg.From = agt.name
-        msg.Action = "OUTPUT"
+        msg.Action = "input_HI"
         # msg.TaskID = {"SENTENCE": data}
         # data = "a"
         msg.Args = data

@@ -147,6 +147,7 @@ class ResourceConnectorAgent(EdgeBaseAgent):
         msg.Args["situation"] = situation
         print(msg.Args)
         msg.To = "Decision"  # 宛先の変更
+        msg.Action = "OUTPUT_cognition"
         agt.send_message(msg, qos=0)
         #
 
