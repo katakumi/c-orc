@@ -14,45 +14,45 @@ class ResourceConnectorAgent(EdgeBaseAgent):
 
 
     def act_output(self, msg: AgentMessage):
-        def act_count(name1, name2):
-            i = 0
-            count = 0
-            for n in msg.Args[name1]:
-                if msg.Args[name1][i].count(name2):
-                    count += 1
-                i += 1
-            return count
-
-        print(">>>", msg.Args)
-
-        # i = 0
-        # count = 0
-        # for n in msg.Args["rote"]:
-        #     if msg.Args["rote"][i].count("gw1"):
-        #         count += 1
-        #     i += 1
-        # print(count)
-
-        gw1 = act_count("rote", "gw1")
-        gw2 = act_count("rote", "gw2")
-        wap1 = act_count("rote", "wap1")
-        wap2 = act_count("rote", "wap2")
-        wap3 = act_count("rote", "wap3")
-
-        print("gw1 connection=", gw1)
-        print("gw2 connection=", gw2)
-        print("wap1 connection=", wap1)
-        print("wap2 connection=", wap2)
-        print("wap3 connection=", wap3)
-        data = {
-            "gw":{"gw1": gw1,
-                  "gw2": gw2
-                  },
-            "wap":{"wap1": wap1,
-                   "wap2": wap2,
-                   "wap3": wap3
-                   }
-        }
+        # def act_count(name1, name2):
+        #     i = 0
+        #     count = 0
+        #     for n in msg.Args[name1]:
+        #         if msg.Args[name1][i].count(name2):
+        #             count += 1
+        #         i += 1
+        #     return count
+        #
+        # print(">>>", msg.Args)
+        #
+        # # i = 0
+        # # count = 0
+        # # for n in msg.Args["rote"]:
+        # #     if msg.Args["rote"][i].count("gw1"):
+        # #         count += 1
+        # #     i += 1
+        # # print(count)
+        #
+        # gw1 = act_count("route", "gw1")
+        # gw2 = act_count("route", "gw2")
+        # wap1 = act_count("route", "wap1")
+        # wap2 = act_count("route", "wap2")
+        # wap3 = act_count("route", "wap3")
+        #
+        # print("gw1 connection=", gw1)
+        # print("gw2 connection=", gw2)
+        # print("wap1 connection=", wap1)
+        # print("wap2 connection=", wap2)
+        # print("wap3 connection=", wap3)
+        # data = {
+        #     "gw":{"gw1": gw1,
+        #           "gw2": gw2
+        #           },
+        #     "wap":{"wap1": wap1,
+        #            "wap2": wap2,
+        #            "wap3": wap3
+        #            }
+        # }
 
 
 
@@ -68,8 +68,9 @@ class ResourceConnectorAgent(EdgeBaseAgent):
         #             "wca2": "state", "rote21": "ab", "rote22": "bc", "broken21": "c"
         #             }
 
-        msg.Args = data
+        # msg.Args = msg.Argsdata
         # msg.To = "Cognition"            #宛先の変更
+        print(msg.Args)
         msg.To = "Cognition"
         agt.send_message(msg, qos=0)    #メッセージ送信
 

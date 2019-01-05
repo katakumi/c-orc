@@ -10,17 +10,17 @@ import numpy as np
 import itertools
 import pymysql.cursors
 
-
 conn = pymysql.connect(host='localhost',
-                    user='root',
-                    db='test',
-                    password='takumi',
-                    charset='utf8mb4',
-                    cursorclass=pymysql.cursors.DictCursor)
+                       user='root',
+                       db='test',
+                       password='takumi',
+                       charset='utf8mb4',
+                       cursorclass=pymysql.cursors.DictCursor)
 cursor = conn.cursor()
 # データベース「test」を選択
 cursor.execute("USE test")
 conn.commit()
+
 
 class ResourceConnectorAgent(EdgeBaseAgent):
     #
@@ -28,43 +28,86 @@ class ResourceConnectorAgent(EdgeBaseAgent):
         'OUTPUT': 'act_output'
     }
 
-
     def act_output(self, msg: AgentMessage):
         print(">>>", msg.Args)
-        unixtime = time.time()
+        # wapの数が分かっていなくても個数を検出できる処理
+        # aa = [l for l in msg.Args["route"] if 'wap' in l]
+        # print(aa)
+        def act_count(name):    # GW、WAPの接続数カウント
+            i = 0
+            count = 0
+            for n in msg.Args["route"]:
+                if msg.Args["route"][i].count(name):
+                    count += 1
+                i += 1
+            return count
+
+        gw1 = act_count("gw1")
+        gw2 = act_count("gw2")
+        wap1 = act_count("wap1")
+        wap2 = act_count("wap2")
+        wap3 = act_count("wap3")
+
+        print("gw1 connection=", gw1)
+        print("gw2 connection=", gw2)
+        print("wap1 connection=", wap1)
+        print("wap2 connection=", wap2)
+        print("wap3 connection=", wap3)
+        waps = {"wap1": wap1,
+                "wap2": wap2,
+                "wap3": wap3
+                }
+
+        # 偏りの検出
+        device_sum = wap1 + wap2 + wap3
+        print(device_sum)
+        wap_sum = 3
+        ave = device_sum / wap_sum      # wap1台当たりの平均接続デバイス数
+        print("average", ave)
+        i = 0
+        if ave > 1:
+            for n in waps:
+                name1 = i + 1
+                name2 = "wap"+ str(name1)
+                if ave < waps[name2]:    # 平均台数以上繋がっているWAPを表示
+                    biased = name2
+                i += 1
+        # unixtime = time.time()
         # print(msg.Date)
         # data = {"a": 2, "b": 2}
         # msg.Args["cognition"] = data  # 辞書の追加
         # print(msg.Args)
-        msg.To = "Decision"  # 宛先の変更
-        # wapに接続されているデバイスの合計
-        i = 0
-        sum = 0
-        leng = 0
-        for n in msg.Args["wap"]:
-            name1 = i + 1
-            name2 = "wap"+ str(name1)
-            # print(name2)
-            sum += msg.Args["wap"][name2]
-            i += 1
-            leng += 1
-        print("device total", sum)
-        # デバイス数÷WAP数
-        ave = sum / leng
-        print("agerage", ave)
 
-        # 平均と比較してWAPに接続されているデバイス数の偏りがないか
-        i = 0
-        biased = "none"
-        if ave > 1:
-            print("----")
-            for n in msg.Args["wap"]:
-                name1 = i + 1
-                name2 = "wap" + str(name1)
-                if ave < msg.Args["wap"][name2]:
-                    biased = name2
-                i += 1
-        print("biased", biased)
+        # # wapに接続されているデバイスの合計
+        # i = 0
+        # sum = 0
+        # leng = 0
+        # # for n in msg.Args["wap"]:
+        # for n in msg.Args["route"]:
+        #     name1 = i + 1
+        #     name2 = "wap"+ str(name1)
+        #     # print(name2)
+        #     sum += msg.Args["wap"][name2]
+        #     i += 1
+        #     leng += 1
+        # print("device total", sum)
+        # # sum = wap1 + wap2 + wap3
+        # # デバイス数÷WAP数
+        # ave = sum / leng
+        # print("agerage", ave)
+        #
+        # # 平均と比較してWAPに接続されているデバイス数の偏りがないか
+        # i = 0
+        # biased = "none"
+        # if ave > 1:
+        #     print("----")
+        #     for n in msg.Args["wap"]:
+        #         name1 = i + 1
+        #         name2 = "wap" + str(name1)
+        #         if ave < msg.Args["wap"][name2]:
+        #             biased = name2
+        #         i += 1
+        # print("biased", biased)
 
         # DBにsituationを保存
         # Decisionに送信
@@ -74,18 +117,14 @@ class ResourceConnectorAgent(EdgeBaseAgent):
         # 優先するアプリとそのWAPをDBから検索
         # WAPが使われていたら経路変更
 
-
         # ave = sum / count
         # print(ave)
-
 
         # r.set(unixtime, msg.Args["WCA_name"])
         # print(r.get(msg.Args["WCA_name"]))
         # r.set(msg.Args["WCA_name"], unixtime)
         # # print(r.get(msg.Args["WCA_name"]))
         # print(r.keys())
-
-
 
         # r.set(msg.Date, msg.Args)
         # print(r.get(msg.Args))
@@ -94,9 +133,22 @@ class ResourceConnectorAgent(EdgeBaseAgent):
         # print(msg.From)
 
         # msg.To = "net_hi"
+        situation = {           # Decisionへ送信するsituation
+            "gw": {"gw1": gw1,
+                   "gw2": gw2
+                   },
+            # "wap": {"wap1": wap1,
+            #         "wap2": wap2,
+            #         "wap3": wap3
+            #         },
+            "wap": waps,
+            "biased": biased
+        }
+        msg.Args["situation"] = situation
+        print(msg.Args)
+        msg.To = "Decision"  # 宛先の変更
         agt.send_message(msg, qos=0)
         #
-
 
         # data = {
         #     "WCA_name": msg.Args["WCA_name"],
@@ -114,11 +166,6 @@ class ResourceConnectorAgent(EdgeBaseAgent):
         #     "broken2": msg.Args["broken2"],
         #     "unixtime": unixtime
         # }
-
-
-
-
-
 
         # # insertの型の生成
         # insert_wca = "INSERT INTO wca_table (WCA, INPUT, OUTPUT, state, rote_1, rote_2, rote_3, rote_4, rote_5, rote_6, " \
@@ -146,6 +193,7 @@ class ResourceConnectorAgent(EdgeBaseAgent):
         #
         # for k in range(n):
         #     print(data[k])
+
 
 if __name__ == "__main__":
     print("===============================================================")

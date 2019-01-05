@@ -28,7 +28,7 @@ if __name__ == "__main__":
         msg.Action = "OUTPUT"
         msg.Args = {
             # "rote": ("gw1-wap1-d1","gw1-wap1-d1","gw2-wap2-d2"),
-            "rote": ("gw1-wap1-d1", "gw2-wap2-d2"),
+            "route": ("gw1-wap1-d1", "gw1-wap1-d1", "gw1-wap1-d1", "gw2-wap2-d2"),
             "unused_rote": ("gw1-wap2", "gw2-wap3"),
             "use_app": ("d1-app1","d2-app2","d3-app3")
         }
