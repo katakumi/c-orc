@@ -52,6 +52,7 @@ def act_replace(date0, time0):
 
     time00 = date + " " + time0
     datetime = dt.strptime(time00, '%d %m %Y %H:%M')
+
     datetime_ts = datetime.timestamp()
 
     return datetime_ts
