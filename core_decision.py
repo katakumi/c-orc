@@ -35,6 +35,28 @@ class ResourceConnectorAgent(EdgeBaseAgent):
     #     print("aaa")
     def act_cognition(self, msg: AgentMessage):     # cognitionからの処理
         print(">>>",msg.Args)
+        now = datetime.now()
+        now_unix = now.timestamp()
+        sql = "SELECT Task_name, WAP, Pecisive_pri FROM iot_table WHERE Start_unix BETWEEN %s AND %s;"
+        val = (now_unix, now_unix+180)
+        cursor.execute(sql, val)
+        result = cursor.fetchall()
+        conn.commit()
+        print("Current time search result")
+        print(result)       # Task_name, WAP, Pecisive_pri
+        if result[0][2] == 2:       # 現在時刻でstartするアプリの優先度が２だったら経路変更
+            print(msg.Args)
+
+
+
+    # DBで現在時刻で稼働しているアプリ検索
+    # なかったらそのままスルー
+    # あったら、アプリ名・WAPを取り出す
+    # まず、そのアプリが使われていないか
+    # HIから指定されたWAPは使われていないか
+    # 使われていたらその経路を使用しているデバイス・WAP・GWをC-CONTから送られてきた使用されていない経路へ変更
+    # 経路変更が終わったらOperationへ送信
+
 
     def write(self,taskname,wcas,startunix,endunix,wap,prirority1,type,Pecisive_pri):
         insert_iot = "INSERT INTO iot_table (Task_Name, WCAs, start_unix, end_unix, wap, Priority, type, Pecisive_pri) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"
@@ -51,8 +73,6 @@ class ResourceConnectorAgent(EdgeBaseAgent):
 
     def act_HI(self, msg: AgentMessage):            # HIからの処理
         print(">>>", msg.Args)
-        # msg.Args["decison"] = data  # 辞書の追加
-
         # iot_tableにデータが入っているか確認
         sql = "SELECT * FROM iot_table ;"
         cursor.execute(sql)
@@ -64,9 +84,7 @@ class ResourceConnectorAgent(EdgeBaseAgent):
             print("The database is empty")
             self.write(msg.Args["Task Name"], msg.Args["WCAs"], msg.Args["start_unix"], msg.Args["end_unix"],
                        msg.Args["wap"], msg.Args["Priority"], msg.Args["Type"], msg.Args["Priority"])
-        else:
-            #DBに保存されているデータを呼び出す処理
-            # それを比較
+        else:       #DBに保存されているデータを呼び出し、それを比較
             cursor.execute("SELECT * FROM iot_table;")
             result = cursor.fetchall()
             cursor.nextset()
@@ -84,22 +102,23 @@ class ResourceConnectorAgent(EdgeBaseAgent):
             flag = 0
             # 時間・優先度・WAPが被っていなかったらそのまま書き込み
             for n in data:
-                if (((data[n]["start_unix"] < int(msg.Args["start_unix"]) and data[n]["end_unix"] > int(msg.Args["start_unix"])) or \
-                    (data[n]["start_unix"] < int(msg.Args["end_unix"]) and data[n]["end_unix"] > int(msg.Args["end_unix"])) or \
-                    (data[n]["start_unix"] > int(msg.Args["start_unix"]) and data[n]["end_unix"] < int(msg.Args["end_unix"])) or \
-                    (data[n]["start_unix"] < int(msg.Args["start_unix"]) and data[n]["end_unix"] > int(msg.Args["end_unix"]))) and  \
-                    (data[n]["Priority"] == int(msg.Args["Priority"])) and (data[n]["wap"] == int(msg.Args["wap"]))):
+                if ((data[n]["start_unix"] < int(msg.Args["start_unix"] and data[n]["end_unix"] > int(msg.Args["start_unix"])) or \
+                (data[n]["start_unix"] < int(msg.Args["end_unix"]) and data[n]["end_unix"] > int(msg.Args["end_unix"])) or \
+                (data[n]["start_unix"] > int(msg.Args["start_unix"]) and data[n]["end_unix"] < int(msg.Args["end_unix"])) or \
+                (data[n]["start_unix"] < int(msg.Args["start_unix"]) and data[n]["end_unix"] > int(msg.Args["end_unix"]))) and  \
+                (data[n]["Priority"] == int(msg.Args["Priority"])) and (data[n]["wap"] == int(msg.Args["wap"]))):
+                    if data[n]["type"] < int(msg.Args["Type"]):         # 保存されているアプリより入力されたアプリのほうが優先度が高いとき
+                        # self.write(msg.Args["Task Name"], msg.Args["WCAs"], msg.Args["start_unix"],msg.Args["end_unix"],
+                        #            msg.Args["wap"], msg.Args["Priority"], msg.Args["Type"], 2)
+                        self.update(data[n]["Pecisive_pri"]-1,data[n]["Task_Name"])
                         print("same requirement ", data[n]["Task_Name"])
-                        if data[n]["type"] < int(msg.Args["Type"]):         # 保存されているアプリより入力されたアプリのほうが優先度が高いとき
-                            # self.write(msg.Args["Task Name"], msg.Args["WCAs"], msg.Args["start_unix"],msg.Args["end_unix"],
-                            #            msg.Args["wap"], msg.Args["Priority"], msg.Args["Type"], 2)
-                            self.update(data[n]["Pecisive_pri"]-1,data[n]["Task_Name"])
-                        elif data[n]["type"] > int(msg.Args["Type"]):       # DBに保存してあるアプリの優先度のほうが高かったら、入力されたアプリの優先度を下げる
-                            self.write(msg.Args["Task Name"], msg.Args["WCAs"], msg.Args["start_unix"],msg.Args["end_unix"],
-                                       msg.Args["wap"], msg.Args["Priority"], msg.Args["Type"], int(msg.Args["Priority"])-1)
-                            flag = 1
-                        elif data[n]["type"] == int(msg.Args["Type"]):          # 時間・優先度・WAP・タイプがすべて同じときはネットワークオペレータで処理をする(未実装)
-                            print("same condition ", data[n]["Task_Name"])
+                    elif data[n]["type"] > int(msg.Args["Type"]):       # DBに保存してあるアプリの優先度のほうが高かったら、入力されたアプリの優先度を下げる
+                        self.write(msg.Args["Task Name"], msg.Args["WCAs"], msg.Args["start_unix"],msg.Args["end_unix"],
+                                   msg.Args["wap"], msg.Args["Priority"], msg.Args["Type"], int(msg.Args["Priority"])-1)
+                        print("same requirement ", data[n]["Task_Name"])
+                        flag = 1
+                    elif data[n]["type"] == int(msg.Args["Type"]):          # 時間・優先度・WAP・タイプがすべて同じときはネットワークオペレータで処理をする(未実装)
+                        print("same condition ", data[n]["Task_Name"])
                 i += 1
             if flag == 0:       # 過去に入力されたアプリと要求が被っていなかったらそのまま保存
                 self.write(msg.Args["Task Name"], msg.Args["WCAs"], msg.Args["start_unix"], msg.Args["end_unix"],
@@ -112,9 +131,8 @@ class ResourceConnectorAgent(EdgeBaseAgent):
         # now_unix = now_unix
         # after_unix = now_unix + 300
         # print(now_unix)
-
-        msg.To = "Operation"  # 宛先の変更
-        agt.send_message(msg, qos=0)  # メッセージ送信
+        # msg.To = "Operation"  # 宛先の変更
+        # agt.send_message(msg, qos=0)  # メッセージ送信
 
 if __name__ == "__main__":
     print("===============================================================")
@@ -159,29 +177,29 @@ if __name__ == "__main__":
     cursor.execute(insert_iot, val)
     conn.commit()
 
-    Task_Name = 'bb'
-    WCAs = 'b'
-    Start_unix = now_unix + 10
-    End_unix = now_unix + 1000
-    wap = 1
-    Priority = 2
-    Type = 1
-    Pecisive_pri = Priority
-    val = (Task_Name, WCAs, Start_unix, End_unix, wap, Priority, Type, Pecisive_pri)
-    cursor.execute(insert_iot, val)
-    conn.commit()
-
-    Task_Name = 'cc'
-    WCAs = 'b'
-    Start_unix = now_unix + 50
-    End_unix = now_unix + 600
-    wap = 1
-    Priority = 2
-    Type = 2
-    Pecisive_pri = Priority
-    val = (Task_Name, WCAs, Start_unix, End_unix, wap, Priority, Type, Pecisive_pri)
-    cursor.execute(insert_iot, val)
-    conn.commit()
+    # Task_Name = 'bb'
+    # WCAs = 'b'
+    # Start_unix = now_unix + 2000
+    # End_unix = now_unix + 20000
+    # wap = 1
+    # Priority = 2
+    # Type = 1
+    # Pecisive_pri = Priority
+    # val = (Task_Name, WCAs, Start_unix, End_unix, wap, Priority, Type, Pecisive_pri)
+    # cursor.execute(insert_iot, val)
+    # conn.commit()
+    #
+    # Task_Name = 'cc'
+    # WCAs = 'b'
+    # Start_unix = now_unix + 40
+    # End_unix = now_unix + 6000
+    # wap = 1
+    # Priority = 2
+    # Type = 2
+    # Pecisive_pri = Priority
+    # val = (Task_Name, WCAs, Start_unix, End_unix, wap, Priority, Type, Pecisive_pri)
+    # cursor.execute(insert_iot, val)
+    # conn.commit()
 
     # Task_Name = 'dd'
     # WCAs = 'b'
