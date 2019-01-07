@@ -39,13 +39,32 @@ class ResourceConnectorAgent(EdgeBaseAgent):
         now_unix = now.timestamp()
         sql = "SELECT Task_name, WAP, Pecisive_pri FROM iot_table WHERE Start_unix BETWEEN %s AND %s;"
         val = (now_unix, now_unix+180)
-        cursor.execute(sql, val)
+        cursor.execute(sql, val)             # 3分以内にstartするアプリを検索
         result = cursor.fetchall()
         conn.commit()
         print("Current time search result")
-        print(result)       # Task_name, WAP, Pecisive_pri
-        if result[0][2] == 2:       # 現在時刻でstartするアプリの優先度が２だったら経路変更
-            print(msg.Args)
+        print("result", result)       # Task_name, WAP, Pecisive_pri
+        i = 0
+        # for n in result:
+        for n in msg.Args["device_route"]:
+            print("-----",result[i]) #resultの中のlistの数とdevise_routeの中のlistの数があっていない
+            if result[i][2] == 2:       # 現在時刻でstartするアプリの優先度が２だったら経路変更
+                # print(msg.Args)
+                print(result[i])
+                # use_appで使われているアプリとRouteの中のデバイスが
+                j = 0
+                # if ("wap" + str(result[i][1])) == msg.Args["device_route"][0:3]
+                print(msg.Args["device_route"][i][0:4])
+
+
+
+                # if "wap"+result[i][1]
+                # j = 0
+                # for n in msg.Args["app_name"]:
+                #     if result[i][0] == msg.Args["app_name"][j][3:]:
+                #         print("app_name",msg.Args["app_name"][j][3:])
+            i += 1
+
 
 
 
@@ -172,22 +191,22 @@ if __name__ == "__main__":
     wap = 1
     Priority = 2
     Type = 0
-    Pecisive_pri = Priority
+    Pecisive_pri = Priority -1
     val = (Task_Name, WCAs, Start_unix, End_unix, wap, Priority, Type, Pecisive_pri)
     cursor.execute(insert_iot, val)
     conn.commit()
 
-    # Task_Name = 'bb'
-    # WCAs = 'b'
-    # Start_unix = now_unix + 2000
-    # End_unix = now_unix + 20000
-    # wap = 1
-    # Priority = 2
-    # Type = 1
-    # Pecisive_pri = Priority
-    # val = (Task_Name, WCAs, Start_unix, End_unix, wap, Priority, Type, Pecisive_pri)
-    # cursor.execute(insert_iot, val)
-    # conn.commit()
+    Task_Name = 'bb'
+    WCAs = 'b'
+    Start_unix = now_unix + 60
+    End_unix = now_unix + 20000
+    wap = 3
+    Priority = 2
+    Type = 1
+    Pecisive_pri = Priority
+    val = (Task_Name, WCAs, Start_unix, End_unix, wap, Priority, Type, Pecisive_pri)
+    cursor.execute(insert_iot, val)
+    conn.commit()
     #
     # Task_Name = 'cc'
     # WCAs = 'b'

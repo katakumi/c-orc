@@ -28,9 +28,14 @@ if __name__ == "__main__":
         msg.Action = "OUTPUT"
         msg.Args = {
             # "rote": ("gw1-wap1-d1","gw1-wap1-d1","gw2-wap2-d2"),
-            "route": ("gw1-wap1-d1", "gw1-wap1-d1", "gw1-wap1-d1", "gw2-wap2-d2"),
-            "unused_rote": ("gw1-wap2", "gw2-wap3"),
-            "use_app": ("d1-app1","d2-app2","d3-app3")
+            # "route": ("gw1-wap1-d1", "gw1-wap1-d2", "gw1-wap1-d1", "gw2-wap2-d2"),
+            # "unused_rote": ("gw1-wap2", "gw2-wap3"),
+            # "use_app": ("d1-app1","d2-app2","d3-app3")
+            "route":("gw1-wap1","gw2-wap2","gw2-wap3"),
+            "device_route":("wap1-d1","wap2-d2","wap3-d3"),
+            "app_name":("d1-aa","d2-aa","d3-bb"),
+            # "unused_route":("gw1-wap2","gw2-wap1","gw2-wap3")
+            "unused_route":("gw1-wap2","gw2-wap1")
         }
 
         # msg.Args = {

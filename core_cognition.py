@@ -60,7 +60,7 @@ class ResourceConnectorAgent(EdgeBaseAgent):
 
         # 偏りの検出
         device_sum = wap1 + wap2 + wap3
-        print(device_sum)
+        print("device sum", device_sum)
         wap_sum = 3
         ave = device_sum / wap_sum      # wap1台当たりの平均接続デバイス数
         print("average", ave)
@@ -72,6 +72,8 @@ class ResourceConnectorAgent(EdgeBaseAgent):
                 if ave < waps[name2]:    # 平均台数以上繋がっているWAPを表示
                     biased = name2
                 i += 1
+        else:
+                biased = "none"
         # unixtime = time.time()
         # print(msg.Date)
         # data = {"a": 2, "b": 2}
