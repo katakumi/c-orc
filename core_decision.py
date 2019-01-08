@@ -42,13 +42,20 @@ class ResourceConnectorAgent(EdgeBaseAgent):
         cursor.execute(sql, val)             # 3分以内にstartするアプリを検索
         result = cursor.fetchall()
         conn.commit()
-        print("Current time search result")
         print("3分以内に稼働するアプリ", result)       # Task_name, WAP, Pecisive_pri
         processing_result = "no change"
         i = 0
         for n in result:
             if result[i][2] == 2:       # 優先度が２のアプリはないか
-
+                k = 0
+                flag = 0
+                for n in msg.Args["app_name"]:          # 優先度が2のアプリが使用されていなかったらbreak
+                    # print(msg.Args["app_name"][k][3:])
+                    if msg.Args["app_name"][k][3:] == result[i][0]:
+                        flag = 1
+                    k += 1
+                if flag == 0:
+                    break
                 print("優先度が2のアプリ", result[i])
                 j = 0
                 for n in msg.Args["route"]:
@@ -76,7 +83,7 @@ class ResourceConnectorAgent(EdgeBaseAgent):
                             # print(msg.Args["route"][l][0:3])
                             if (use_gw == msg.Args["route"][l][0:3]) and (device_name != msg.Args["route"][l][9:]):
                                 wap_name = msg.Args["route"][l][4:8]
-                                print("wap_name",wap_name)
+                                print("優先度が高いWAPと同じGWを使用しているWAP",wap_name)
                                 break
                             l += 1
                         k = 0
@@ -84,10 +91,10 @@ class ResourceConnectorAgent(EdgeBaseAgent):
                             # print(msg.Args["unused_route"][k][4:])        #
                             if wap_name == msg.Args["unused_route"][k][4:]:
                                 change = msg.Args["unused_route"][k]
-                                print("変更後のroute",change)
+                                print("変更可能な未使用route",change)
                                 break
                             k += 1
-                        print(msg.Args["route"][l])
+                        # print(msg.Args["route"][l])
                         change_route = change + msg.Args["route"][l][8:]             # wap_nameの経路変更
                         print("変更後のroute", change_route)
                         msg.Args["route"][l] = change_route
@@ -223,7 +230,7 @@ if __name__ == "__main__":
     Start_unix = now_unix + 60
     End_unix = now_unix + 20000
     wap = 3
-    Priority = 1
+    Priority = 2
     Type = 1
     Pecisive_pri = Priority
     val = (Task_Name, WCAs, Start_unix, End_unix, wap, Priority, Type, Pecisive_pri)
