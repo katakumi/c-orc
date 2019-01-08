@@ -44,26 +44,129 @@ class ResourceConnectorAgent(EdgeBaseAgent):
         conn.commit()
         print("Current time search result")
         print("result", result)       # Task_name, WAP, Pecisive_pri
+        # print("device_route", msg.Args["device_route"])
+        # print(type(msg.Args["device_route"]))
+        # print(type(result))
+        # if len(msg.Args["device_route"]) < len(result):
+        #     longer = result
+        # elif len(msg.Args["device_route"]) > len(result):
+        #     longer = msg.Args["device_route"]
+        # else:
+        #     longer = msg.Args["device_route"]
+        # # print(longer)
+        # i = 0
+        # for n in longer:
+        #     print("-----", result[i])
+        #     if result[i][2] == 2:       # 現在時刻でstartするアプリの優先度が２だったら経路変更
+        #         # print(msg.Args)
+        #         print(result[i])
+        #         # use_appで使われているアプリとRouteの中のデバイスが
+        #         j = 0
+        #         # if ("wap" + str(result[i][1])) == msg.Args["device_route"][0:3]
+        #         print(msg.Args["device_route"][i][0:4])
+        #
+        #
+        #
+        #         # if "wap"+result[i][1]
+        #         # j = 0
+        #         # for n in msg.Args["app_name"]:
+        #         #     if result[i][0] == msg.Args["app_name"][j][3:]:
+        #         #         print("app_name",msg.Args["app_name"][j][3:])
+        #     i += 1
         i = 0
-        # for n in result:
-        for n in msg.Args["device_route"]:
-            print("-----",result[i]) #resultの中のlistの数とdevise_routeの中のlistの数があっていない
-            if result[i][2] == 2:       # 現在時刻でstartするアプリの優先度が２だったら経路変更
-                # print(msg.Args)
-                print(result[i])
-                # use_appで使われているアプリとRouteの中のデバイスが
+        for n in result:
+            if result[i][2] == 2:       # 優先度が２のアプリはないか
+                print("優先度が2のアプリ", result[i])
+                print("mark 1")
                 j = 0
-                # if ("wap" + str(result[i][1])) == msg.Args["device_route"][0:3]
-                print(msg.Args["device_route"][i][0:4])
+                # {'route': ('gw1-wap1-d1', 'gw2-wap2-d2', 'gw2-wap3-d3'), 'app_name': ('d1-aa', 'd2-aa', 'd3-bb'), 'unused_route': ('gw1-wap2', 'gw2-wap1')}
+                for n in msg.Args["route"]:
+                    print("mark 2")
+                    print("route", msg.Args["route"])
+                    print(msg.Args["route"][j][4:8])
+                    if msg.Args["route"][j][4:8] == "wap" + str(result[i][1]):
+                        print(msg.Args["route"][j][4:8], "wap" + str(result[i][1]))
+                        k = 0
+                        for n in msg.Args["app_name"]:
+                            if result[i][0] == msg.Args["app_name"][k][3:]:
+                                device_name = msg.Args["app_name"][k][0:2]
+                                print("優先度が2のアプリを使用しているデバイス",device_name)
+                                break
+                            k += 1
+                        # device_nameがあるRouteの中のGWを探す
+                        k = 0
+                        for n in msg.Args["route"]:
+                            # print(msg.Args["route"][k][9:])
+                            if device_name == msg.Args["route"][k][9:]:     # 優先度の高いWAPが使用するGWを探す
+                                use_gw = msg.Args["route"][k][0:3]          # use_gw＝優先度が高いWAPが使用するGW
+                                print("優先度が高いWAPが使用しているGW", use_gw)
+                                break
+                            k += 1
+                        l = 0
+                        for n in msg.Args["route"]:                         # 他のWAPがuse_gwを使っていないか
+                            # print(msg.Args["route"][k][9:])               # wap_name=use_gwを使用している優先度が低いWAP
+                            print(msg.Args["route"][l][0:3])
+                            if (use_gw == msg.Args["route"][l][0:3]) and (device_name != msg.Args["route"][l][9:]):
+                                wap_name = msg.Args["route"][l][4:8]
+                                print("wap_name",wap_name)
+                                break
+                            l += 1
+                        k = 0
+                        for n in msg.Args["unused_route"]:                  # wap_nameが使用できる未使用のroute
+                            # print(msg.Args["unused_route"][k][4:])        #
+                            if wap_name == msg.Args["unused_route"][k][4:]:
+                                change = msg.Args["unused_route"][k]
+                                print("変更後のroute",change)
+                                break
+                            k += 1
+                        # k = 0
+                        # for n in msg.Args["route"]:                         # wap_nameの経路変更
+                        #     if msg.Args["route"][k][4:8] == wap_name:
+                        print(msg.Args["route"][l])
+                        change_route = change + msg.Args["route"][l][8:]
+                        print("変更後のroute", change_route)
+                        msg.Args["route"][l] = change_route
 
 
 
-                # if "wap"+result[i][1]
-                # j = 0
-                # for n in msg.Args["app_name"]:
-                #     if result[i][0] == msg.Args["app_name"][j][3:]:
-                #         print("app_name",msg.Args["app_name"][j][3:])
+                        # print(msg.Args["route"][j][9:], msg.Args["app_name"][k][3:])
+
+                    # if msg.Args["app_name"][j][3:] == result[i][0]:      # 現在使われているデバイスの中で優先度が高いアプリを使用しているデバイスはないか
+                        # print(msg.Args["app_name"][j])
+                        # print(result[i])
+                        # if msg.Args[]          # 優先度が高いアプリが指定されたWAPで使われているか
+                    # if msg.Args["device_route"][j][0:4] == "wap" + str(result[i][1]):       # 優先度が2のWAPを使用しているデバイスはないか
+                    #     print("mark 3")
+                    #     device_name = msg.Args["device_route"][j][5:]
+                    #     print("優先度が2のWAPを使用しているデバイス名", device_name)
+                    #     k = 0
+                    #
+                    #     for n in msg.Args["app_name"]:
+                    #         if msg.Args["app_name"][k][3:] == result[i][0]:    # 優先度が2のアプリを使用しているデバイス
+                    #             pass
+                    #         #     優先度が2のWAPが使用しているGWを探す
+                    #         # そのGWに接続している他のWAPがあるか
+                    #         # あったらunused_routeから他のGWへ接続させる
+                    #
+                    #         k += 1
+
+                        # k = 0
+                        # for n in msg.Args["app_name"]:
+                        #     if msg.Args["app_name"][k][0:3] == device_name:
+                        #         print(msg.Args["app_name"][k])
+                        #     k += 1
+
+                        # if msg.Args["app_name"]
+                    # print(msg.Args["device_route"][j][0:4])
+                    # print("wap" + str(result[i][1]))
+                    # print(type(msg.Args["device_route"][j][0:4]))
+                    j += 1
+                # print("i=",i)
             i += 1
+        msg.Args = msg.Args["route"]
+        print("結果",msg.Args)
+
+
 
 
 
