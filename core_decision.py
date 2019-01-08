@@ -43,10 +43,12 @@ class ResourceConnectorAgent(EdgeBaseAgent):
         result = cursor.fetchall()
         conn.commit()
         print("Current time search result")
-        print("result", result)       # Task_name, WAP, Pecisive_pri
+        print("3分以内に稼働するアプリ", result)       # Task_name, WAP, Pecisive_pri
+        processing_result = "no change"
         i = 0
         for n in result:
             if result[i][2] == 2:       # 優先度が２のアプリはないか
+
                 print("優先度が2のアプリ", result[i])
                 j = 0
                 for n in msg.Args["route"]:
@@ -89,12 +91,11 @@ class ResourceConnectorAgent(EdgeBaseAgent):
                         change_route = change + msg.Args["route"][l][8:]             # wap_nameの経路変更
                         print("変更後のroute", change_route)
                         msg.Args["route"][l] = change_route
-                        msg.Args = msg.Args["route"]
+                        processing_result = msg.Args["route"]
                     j += 1
-            # else:
-            #     msg.Args = "no change"
             i += 1
-            
+
+        msg.Args = processing_result
         # msg.Args = msg.Args["route"]
         print("結果",msg.Args)
 
@@ -222,7 +223,7 @@ if __name__ == "__main__":
     Start_unix = now_unix + 60
     End_unix = now_unix + 20000
     wap = 3
-    Priority = 2
+    Priority = 1
     Type = 1
     Pecisive_pri = Priority
     val = (Task_Name, WCAs, Start_unix, End_unix, wap, Priority, Type, Pecisive_pri)
