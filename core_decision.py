@@ -56,6 +56,7 @@ class ResourceConnectorAgent(EdgeBaseAgent):
                     for n in msg.Args["app_name"]:          # 優先度が2のアプリが使用されていなかったらbreak
                         if msg.Args["app_name"][k][3:] == result[i][0]:
                             flag = 1
+                            device_name = "unused"
                         k += 1
                     if flag == 0:
                         device_name = "unused"
@@ -70,8 +71,6 @@ class ResourceConnectorAgent(EdgeBaseAgent):
                                     device_name = msg.Args["app_name"][k][0:2]
                                     print("優先度が2のアプリを使用しているデバイス",device_name)
                                     break
-                                # else:
-                                #     device_name = "unused"
                                 k += 1
                             k = 0
                             for n in msg.Args["route"]:
@@ -107,18 +106,18 @@ class ResourceConnectorAgent(EdgeBaseAgent):
                                 processing_result = msg.Args["route"]
                         j += 1
                 i += 1
-            if wap_name == "none" and wap_name == "none" and device_name == "none":
-                print("優先度が2のアプリなし")
-            if device_name == "unused":
-                print("優先度が高いアプリを使用しているデバイスなし")
-            if wap_name == "unused" and change == "unused":
-                print("優先度が高いWAPと同じGWを使用しているWAPなし")
-            if change == "unused":
-                print("変更可能な未使用のrouteなし")
         else:
             print("3分以内に稼働するアプリなし")
         msg.Args = processing_result
         print("結果",msg.Args)
+        if wap_name == "none" and wap_name == "none" and device_name == "none":
+            print("優先度が2のアプリなし")
+        if device_name == "unused":
+            print("優先度が高いアプリを使用しているデバイスなし")
+        if wap_name == "unused" and change == "unused":
+            print("優先度が高いWAPと同じGWを使用しているWAPなし")
+        if change == "unused":
+            print("変更可能な未使用のrouteなし")
         # print("wap name", wap_name)
         # print("device name", device_name)
         # print("change", change)
