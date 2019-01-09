@@ -35,7 +35,8 @@ if __name__ == "__main__":
             # "device_route":("wap1-d1","wap2-d2","wap3-d3"),
             "app_name":("d1-aa","d2-aa","d3-bb"),
             # "unused_route":("gw1-wap2","gw2-wap1","gw2-wap3")
-            "unused_route":("gw1-wap2","gw2-wap1")
+            # "unused_route":("gw1-wap2","gw2-wap1")
+            "unused_route": ("gw2-wap1",)
         }
 
         # msg.Args = {
